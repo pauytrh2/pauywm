@@ -4,7 +4,7 @@ set -e
 
 make
 
-XEPHYR=$(command -v Xephyr) # Absolute path of Xephyr's bin
+XEPHYR=$(command -v Xephyr) # abs path of Xephyr bin
 xinit ./xinitrc -- \
     "$XEPHYR" \
         :100 \
