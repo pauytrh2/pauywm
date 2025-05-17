@@ -6,6 +6,19 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <unistd.h>
+#include <sys/types.h>
+
+void launch_program(const char *prog) {
+    pid_t pid = fork();
+    if (pid == 0) {
+        execlp(prog, prog, NULL);
+        perror("execlp failed");
+        _exit(1);
+    } else if (pid < 0) {
+        perror("fork failed");
+    }
+}
 
 void panic(char *msg) {
     puts(msg);
@@ -48,31 +61,31 @@ int main(void) {
     XGrabButton(dpy, Button1, 0, root, False, ButtonPressMask,
                 GrabModeAsync, GrabModeAsync, None, None);
 
-    grabKey("a", ShiftMask);
+    // grabKey("a", ShiftMask);
     grabKey("Escape", ShiftMask);  // shift + esc to exit
+    grabKey("t", Mod4Mask); // super + t for xterm
 
     XEvent e;
     while (running) {
         XNextEvent(dpy, &e);
         switch (e.type) {
         case ButtonPress:
-            puts("Button pressed!");
             break;
         case ButtonRelease:
-            puts("Button released!");
             break;
         case KeyPress: {
-            puts("Key pressed!");
             XKeyEvent *kev = &e.xkey;
             KeySym sym = XkbKeycodeToKeysym(dpy, kev->keycode, 0, 0);
             if (sym == XK_Escape && (kev->state & ShiftMask)) {
                 puts("Exit key combo pressed, exiting...");
                 running = false;
+            } else if (sym == XK_t && (kev->state & Mod4Mask)) {
+                puts("Terminal key combo pressed, launching xterm...");
+                launch_program("xterm");
             }
             break;
         }
         case KeyRelease:
-            puts("Key released!");
             break;
         default:
             printf("Unexpected event: %d\n", e.type);
