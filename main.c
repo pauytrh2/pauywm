@@ -1,8 +1,11 @@
 #include <X11/Xlib.h>
 #include <X11/X.h>
 #include <X11/cursorfont.h>
+#include <X11/keysym.h>
+#include <X11/XKBlib.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <stdbool.h>
 
 void panic(char *msg) {
     puts(msg);
@@ -11,6 +14,7 @@ void panic(char *msg) {
 
 Display *dpy;
 Window root;
+bool running = true;
 
 void grabKey(char *key, unsigned int mod) {
     KeySym sym = XStringToKeysym(key);
@@ -45,9 +49,10 @@ int main(void) {
                 GrabModeAsync, GrabModeAsync, None, None);
 
     grabKey("a", ShiftMask);
+    grabKey("Escape", ShiftMask);  // shift + esc to exit
 
     XEvent e;
-    for (;;) {
+    while (running) {
         XNextEvent(dpy, &e);
         switch (e.type) {
         case ButtonPress:
@@ -56,9 +61,16 @@ int main(void) {
         case ButtonRelease:
             puts("Button released!");
             break;
-        case KeyPress:
+        case KeyPress: {
             puts("Key pressed!");
+            XKeyEvent *kev = &e.xkey;
+            KeySym sym = XkbKeycodeToKeysyml(dpy, kev->keycode, 0, 0);
+            if (sym == XK_Escape && (kev->state & ShiftMask)) {
+                puts("Exit key combo pressed, exiting...");
+                running = false;
+            }
             break;
+        }
         case KeyRelease:
             puts("Key released!");
             break;
