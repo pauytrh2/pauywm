@@ -64,7 +64,7 @@ int main(void) {
         case KeyPress: {
             puts("Key pressed!");
             XKeyEvent *kev = &e.xkey;
-            KeySym sym = XkbKeycodeToKeysyml(dpy, kev->keycode, 0, 0);
+            KeySym sym = XkbKeycodeToKeysym(dpy, kev->keycode, 0, 0);
             if (sym == XK_Escape && (kev->state & ShiftMask)) {
                 puts("Exit key combo pressed, exiting...");
                 running = false;
