@@ -3,11 +3,11 @@
 #include <X11/cursorfont.h>
 #include <X11/keysym.h>
 #include <X11/XKBlib.h>
+#include <sys/types.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <unistd.h>
-#include <sys/types.h>
 
 void launch_program(const char *prog) {
     pid_t pid = fork();
