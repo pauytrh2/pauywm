@@ -5,3 +5,6 @@ To run PauyWM, simply run
 chmod +x run.sh
 ./run.sh
 ```
+## Usage
+- press ```shift + esc``` to exit
+- press ```super + t``` to open xterm
